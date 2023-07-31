@@ -81,17 +81,35 @@ public class GraphTable extends JFrame {
     private void mouseSelection(int row, int column) {
         Node cellData = (Node) table.getValueAt(row, column);
         NodeType nodeType = cellData.getNodeType();
-        Graph tab = ((GraphTableModel)table.getModel()).getGraph();
+        Graph graph = ((GraphTableModel)table.getModel()).getGraph();
         System.out.println("Cell clicked: row " + row + " and column " + column);
         System.out.println("Cell Type: " + nodeType);
-        System.out.println("Cell Neighbours: " + tab.getNeighbours(tab.getNode(row, column)));
+        System.out.println("Cell Neighbours: " + graph.getNeighbours(graph.getNode(row, column)));
         System.out.println("======================");
         if (nodeType == NodeType.WALL) {
+            destroyWall(graph, cellData);
             cellData.setNodeType(NodeType.EMPTY);
         } else if (nodeType == NodeType.EMPTY) {
+            createWall(graph, cellData);
             cellData.setNodeType(NodeType.WALL);
         }
         // Notify the table model that the cell data has been updated
         ((GraphTableModel) table.getModel()).fireTableCellUpdated(row, column);
+    }
+
+    private void createWall(Graph graph, Node wallNode) {
+        for (Node currentNode : graph.getNodes()) {
+            if (currentNode != wallNode) {
+                graph.removeEdge(currentNode, wallNode);
+            }
+        }
+    }
+
+    private void destroyWall(Graph graph, Node wallNode) {
+        for (Node currentNode : graph.getNodes()) {
+            if (currentNode != wallNode) {
+                graph.addEdge(currentNode, wallNode);
+            }
+        }
     }
 }
