@@ -1,3 +1,5 @@
+package GUI;
+
 import Graph.Node;
 import Graph.NodeType;
 import Graph.Graph;

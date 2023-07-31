@@ -1,3 +1,5 @@
+package GUI;
+
 import javax.swing.table.AbstractTableModel;
 import Graph.Node;
 import Graph.NodeType;

@@ -1,3 +1,5 @@
+package GUI;
+
 import Graph.Node;
 
 import javax.swing.*;
