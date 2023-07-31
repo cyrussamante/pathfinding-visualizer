@@ -42,7 +42,6 @@ public class GraphTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Node node = graphTable.get(rowIndex).get(columnIndex);
-        return node.getNodeType();
+        return graphTable.get(rowIndex).get(columnIndex);
     }
 }
