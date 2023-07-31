@@ -9,9 +9,10 @@ import java.util.List;
 public class GraphTableModel extends AbstractTableModel {
 
     private final List<List<Node>> graphTable;
+    private final Graph graph;
 
     public GraphTableModel() {
-        Graph graph = new Graph();
+        graph = new Graph();
         graphTable = new ArrayList<>();
         for (int row = 0; row < 30; row++) {
             List<Node> rowData = new ArrayList<>();
@@ -22,13 +23,14 @@ public class GraphTableModel extends AbstractTableModel {
                 } else if (row == 13 && col == 42) {
                     current = new Node(row, col, NodeType.END);
                 } else {
-                    current = new Node(row, col, NodeType.EMPTY);
+                    current = new Node(row, col);
                 }
                 rowData.add(current);
                 graph.addNode(current);
             }
             graphTable.add(rowData);
         }
+        initializeNeighbours();
     }
     @Override
     public int getRowCount() {
@@ -43,5 +45,31 @@ public class GraphTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         return graphTable.get(rowIndex).get(columnIndex);
+    }
+
+    private void initializeNeighbours() {
+        System.out.println(graph.getNodes().size());
+
+        for (int i = 0; i < 30; i++) {
+            for (int j = 0; j < 60; j++) {
+                Node node = graph.getNode(i, j);
+                if (i > 0){
+                    graph.addEdge(node, graph.getNode(i - 1, j)); // Up
+                }
+                if (i < 29) {
+                    graph.addEdge(node, graph.getNode(i + 1, j)); // Down
+                }
+                if (j > 0) {
+                    graph.addEdge(node, graph.getNode(i, j-1)); // Left
+                }
+                if (j < 59) {
+                    graph.addEdge(node, graph.getNode(i, j+1)); // Right
+                }
+            }
+        }
+ }
+
+    public Graph getGraph() {
+        return graph;
     }
 }

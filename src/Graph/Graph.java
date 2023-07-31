@@ -55,4 +55,13 @@ public class Graph implements GraphInterface{
     public Set<Node> getNeighbours(Node node) {
         return adjacencyList.get(node);
     }
+
+    public Node getNode(int row, int col) {
+        for (Node node : adjacencyList.keySet()) {
+            if (node.getRow() == row && node.getColumn() == col) {
+                return node;
+            }
+        }
+        return null;
+    }
 }
