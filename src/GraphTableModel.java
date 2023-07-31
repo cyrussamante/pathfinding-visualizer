@@ -48,23 +48,10 @@ public class GraphTableModel extends AbstractTableModel {
     }
 
     private void initializeNeighbours() {
-        System.out.println(graph.getNodes().size());
-
         for (int i = 0; i < 30; i++) {
             for (int j = 0; j < 60; j++) {
                 Node node = graph.getNode(i, j);
-                if (i > 0){
-                    graph.addEdge(node, graph.getNode(i - 1, j)); // Up
-                }
-                if (i < 29) {
-                    graph.addEdge(node, graph.getNode(i + 1, j)); // Down
-                }
-                if (j > 0) {
-                    graph.addEdge(node, graph.getNode(i, j-1)); // Left
-                }
-                if (j < 59) {
-                    graph.addEdge(node, graph.getNode(i, j+1)); // Right
-                }
+                GraphTable.calculateNeighbours(graph, node, i, j);
             }
         }
  }

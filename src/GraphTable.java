@@ -82,10 +82,6 @@ public class GraphTable extends JFrame {
         Node cellData = (Node) table.getValueAt(row, column);
         NodeType nodeType = cellData.getNodeType();
         Graph graph = ((GraphTableModel)table.getModel()).getGraph();
-        System.out.println("Cell clicked: row " + row + " and column " + column);
-        System.out.println("Cell Type: " + nodeType);
-        System.out.println("Cell Neighbours: " + graph.getNeighbours(graph.getNode(row, column)));
-        System.out.println("======================");
         if (nodeType == NodeType.WALL) {
             destroyWall(graph, cellData);
             cellData.setNodeType(NodeType.EMPTY);
@@ -93,6 +89,10 @@ public class GraphTable extends JFrame {
             createWall(graph, cellData);
             cellData.setNodeType(NodeType.WALL);
         }
+        System.out.println("Cell clicked: row " + row + " and column " + column);
+        System.out.println("Cell Type: " + cellData.getNodeType());
+        System.out.println("Cell Neighbours: " + graph.getNeighbours(graph.getNode(row, column)));
+        System.out.println("======================");
         // Notify the table model that the cell data has been updated
         ((GraphTableModel) table.getModel()).fireTableCellUpdated(row, column);
     }
@@ -106,10 +106,23 @@ public class GraphTable extends JFrame {
     }
 
     private void destroyWall(Graph graph, Node wallNode) {
-        for (Node currentNode : graph.getNodes()) {
-            if (currentNode != wallNode) {
-                graph.addEdge(currentNode, wallNode);
-            }
+        int row = wallNode.getRow();
+        int column = wallNode.getColumn();
+        calculateNeighbours(graph, wallNode, row, column);
+    }
+
+    static void calculateNeighbours(Graph graph, Node wallNode, int row, int column) {
+        if (row > 0) {
+            graph.addEdge(wallNode, graph.getNode(row - 1, column)); // Up
+        }
+        if (row < 29) {
+            graph.addEdge(wallNode, graph.getNode(row + 1, column)); // Down
+        }
+        if (column > 0) {
+            graph.addEdge(wallNode, graph.getNode(row, column-1)); // Left
+        }
+        if (column < 59) {
+            graph.addEdge(wallNode, graph.getNode(row, column+1)); // Right
         }
     }
 }
