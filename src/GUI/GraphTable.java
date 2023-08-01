@@ -102,10 +102,10 @@ public class GraphTable extends JFrame {
             createWall(graph, cellData);
             cellData.setNodeType(NodeType.WALL);
         }
-        System.out.println("Cell clicked: row " + row + " and column " + column);
-        System.out.println("Cell Type: " + cellData.getNodeType());
-        System.out.println("Cell Neighbours: " + graph.getNeighbours(graph.getNode(row, column)));
-        System.out.println("======================");
+//        System.out.println("Cell clicked: row " + row + " and column " + column);
+//        System.out.println("Cell Type: " + cellData.getNodeType());
+//        System.out.println("Cell Neighbours: " + graph.getNeighbours(graph.getNode(row, column)));
+//        System.out.println("======================");
         // Notify the table model that the cell data has been updated
         ((GraphTableModel) table.getModel()).fireTableCellUpdated(row, column);
     }
@@ -155,9 +155,35 @@ public class GraphTable extends JFrame {
         LinkedHashSet<Node> shortestPath = pathfinder.findPath(graph, startNode, endNode);
         shortestPath.remove(startNode);
         shortestPath.remove(endNode);
-        for (Node path : shortestPath) {
-            path.setNodeType(NodeType.PATHWAY);
-            ((GraphTableModel) table.getModel()).fireTableCellUpdated(path.getRow(), path.getColumn());
-        }
+//        for (Node path : shortestPath) {
+//            path.setNodeType(NodeType.PATHWAY);
+//            ((GraphTableModel) table.getModel()).fireTableCellUpdated(path.getRow(), path.getColumn());
+//            table.repaint();
+//        }
+
+        Node[] pathArray = shortestPath.toArray(new Node[0]);
+
+        Timer timer = new Timer(100, new ActionListener() {
+            private int currentIndex = 0;
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (currentIndex < pathArray.length) {
+                    Node path = pathArray[currentIndex++];
+                    path.setNodeType(NodeType.PATHWAY);
+
+                    // Notify the table model that the cell data has been updated
+                    ((GraphTableModel) table.getModel()).fireTableCellUpdated(path.getRow(), path.getColumn());
+
+                    // Trigger the table to repaint
+                    table.repaint();
+                } else {
+                    // Stop the timer when all iterations are completed
+                    ((Timer) e.getSource()).stop();
+                }
+            }
+        });
+
+        // Start the timer
+        timer.start();
     }
 }
