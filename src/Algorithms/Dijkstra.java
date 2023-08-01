@@ -5,10 +5,12 @@ import Graph.Graph;
 
 import java.util.*;
 
-public class Dijkstra {
+public class Dijkstra implements Pathfinder {
 
     @Override
     public LinkedHashSet<Node> findPath(Graph graph, Node startNode, Node endNode) {
+        System.out.println("start1");
+
         // Initialize path and cost arrays
         Node[] paths = new Node[graph.getNodes().size()];
         Integer[] cost = new Integer[graph.getNodes().size()];
@@ -22,7 +24,7 @@ public class Dijkstra {
             Node current = queue.remove();
             for (Node node : graph.getNeighbours(current)) {
                 // Current weighting for edge
-                Integer possibleWeight = cost[current.getId()] + graph.findEdge(current, node).getWeight();
+                Integer possibleWeight = cost[current.getId()] + 1;
                 if (cost[node.getId()] == null || possibleWeight <= cost[node.getId()]) {
                     paths[node.getId()] = current;
                     cost[node.getId()] = possibleWeight;
@@ -31,7 +33,9 @@ public class Dijkstra {
                     queue.offer(node);
                 }
             }
+            System.out.println(queue.peek());
         }
+        System.out.println("done1");
         return getShortestPath(startNode, endNode, paths);
     }
 
@@ -43,6 +47,8 @@ public class Dijkstra {
      * @return a list of nodes that make up the shortest path
      */
     private static LinkedHashSet<Node> getShortestPath(Node startNode, Node endNode, Node[] paths) {
+        System.out.println("start2");
+
         Set<Node> shortestPath = new LinkedHashSet<>();
         Node currentNode = paths[endNode.getId()];
         // If a path exists from the start and end node
@@ -57,6 +63,8 @@ public class Dijkstra {
         }
         List<Node> path = new ArrayList<>(shortestPath);
         Collections.reverse(path);
+        System.out.println("done2");
+
         return new LinkedHashSet<>(path);
     }
 }

@@ -1,5 +1,7 @@
 package GUI;
 
+import Algorithms.Dijkstra;
+import Algorithms.Pathfinder;
 import Graph.Node;
 import Graph.NodeType;
 import Graph.Graph;
@@ -7,9 +9,8 @@ import Graph.Graph;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
+import java.util.LinkedHashSet;
 
 public class GraphTable extends JFrame {
 
@@ -76,6 +77,16 @@ public class GraphTable extends JFrame {
         setLocationRelativeTo(null);
         add(scrollPane);
 
+        JButton button = new JButton();
+        add(button);
+        Graph graph = ((GraphTableModel)table.getModel()).getGraph();
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                calculateDijkstra(graph);
+//                System.out.println("hey");
+            }
+        });
+
         setLayout(new GridBagLayout());
         add(table, new GridBagConstraints());
     }
@@ -125,6 +136,28 @@ public class GraphTable extends JFrame {
         }
         if (column < 59) {
             graph.addEdge(wallNode, graph.getNode(row, column+1)); // Right
+        }
+    }
+
+    private Node findNode(Graph graph, NodeType nodeType) {
+        for (Node node : graph.getNodes()) {
+            if (node.getNodeType() == nodeType) {
+                return node;
+            }
+        }
+        return null;
+    }
+    private void calculateDijkstra(Graph graph) {
+        Node startNode = findNode(graph, NodeType.START);
+        Node endNode = findNode(graph, NodeType.END);
+
+        Pathfinder pathfinder = new Dijkstra();
+        LinkedHashSet<Node> shortestPath = pathfinder.findPath(graph, startNode, endNode);
+        shortestPath.remove(startNode);
+        shortestPath.remove(endNode);
+        for (Node path : shortestPath) {
+            path.setNodeType(NodeType.PATHWAY);
+            ((GraphTableModel) table.getModel()).fireTableCellUpdated(path.getRow(), path.getColumn());
         }
     }
 }

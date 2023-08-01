@@ -7,7 +7,8 @@ public enum NodeType {
     EMPTY(new Color(255, 255, 255)),
     WALL(new Color(23,1,4)),
     START(new Color(0, 158, 42)),
-    END(new Color(158,0,0));
+    END(new Color(158,0,0)),
+    PATHWAY(new Color(239, 182, 42));
 
     NodeType(Color color) {
         this.color = color;
