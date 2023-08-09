@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class GraphTable extends JFrame {
 
@@ -73,22 +74,40 @@ public class GraphTable extends JFrame {
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        setLocationRelativeTo(null);
-        add(scrollPane);
+        JButton visualizeButton = new JButton("Visualize Dijkstra!");
+        JButton clearBoardButton = new JButton("Clear Board");
+        JButton clearPathButton = new JButton("Clear Path");
 
-        JButton button = new JButton();
-        add(button);
         Graph graph = ((GraphTableModel)table.getModel()).getGraph();
-        button.addActionListener(new ActionListener() {
+        visualizeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 calculateDijkstra(graph);
-//                System.out.println("hey");
             }
         });
 
-        setLayout(new GridBagLayout());
-        add(table, new GridBagConstraints());
+        clearBoardButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clearBoard(graph);
+            }
+        });
+
+        clearPathButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clearPath(graph);
+            }
+        });
+
+        JPanel gridPanel = new JPanel();
+        gridPanel.add(table);
+        setLayout(new BorderLayout());
+        add(gridPanel, BorderLayout.CENTER);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(clearBoardButton);
+        buttonPanel.add(visualizeButton);
+        buttonPanel.add(clearPathButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+
     }
 
     private void mouseSelection(int row, int column) {
@@ -98,15 +117,10 @@ public class GraphTable extends JFrame {
         if (nodeType == NodeType.WALL) {
             destroyWall(graph, cellData);
             cellData.setNodeType(NodeType.EMPTY);
-        } else if (nodeType == NodeType.EMPTY) {
+        } else if (nodeType != NodeType.START && nodeType != NodeType.END) {
             createWall(graph, cellData);
             cellData.setNodeType(NodeType.WALL);
         }
-//        System.out.println("Cell clicked: row " + row + " and column " + column);
-//        System.out.println("Cell Type: " + cellData.getNodeType());
-//        System.out.println("Cell Neighbours: " + graph.getNeighbours(graph.getNode(row, column)));
-//        System.out.println("======================");
-        // Notify the table model that the cell data has been updated
         ((GraphTableModel) table.getModel()).fireTableCellUpdated(row, column);
     }
 
@@ -147,20 +161,39 @@ public class GraphTable extends JFrame {
         }
         return null;
     }
+
+    private void clearPath(Graph graph) {
+        for (Node node : graph.getNodes()) {
+            if (node.getNodeType() == NodeType.PATHWAY || node.getNodeType() == NodeType.VISITED) {
+                node.setNodeType(NodeType.EMPTY);
+                ((GraphTableModel) table.getModel()).fireTableCellUpdated(node.getRow(), node.getColumn());
+                table.repaint();
+            }
+        }
+    }
+
+    private void clearBoard(Graph graph) {
+        for (Node node : graph.getNodes()) {
+            if (node.getNodeType() != NodeType.START && node.getNodeType() != NodeType.END) {
+                node.setNodeType(NodeType.EMPTY);
+                ((GraphTableModel) table.getModel()).fireTableCellUpdated(node.getRow(), node.getColumn());
+                table.repaint();
+            }
+        }
+    }
+
     private void calculateDijkstra(Graph graph) {
         Node startNode = findNode(graph, NodeType.START);
         Node endNode = findNode(graph, NodeType.END);
+
+        clearPath(graph);
 
         Pathfinder pathfinder = new Dijkstra();
         LinkedHashSet<Node> shortestPath = pathfinder.findPath(graph, startNode, endNode).get(0);
         LinkedHashSet<Node> visitedOrder = pathfinder.findPath(graph, startNode, endNode).get(1);
         shortestPath.remove(startNode);
         shortestPath.remove(endNode);
-//        for (Node path : shortestPath) {
-//            path.setNodeType(NodeType.PATHWAY);
-//            ((GraphTableModel) table.getModel()).fireTableCellUpdated(path.getRow(), path.getColumn());
-//            table.repaint();
-//        }
+
 
         Node[] pathArray = shortestPath.toArray(new Node[0]);
         Node[] visitedArray = visitedOrder.toArray(new Node[0]);
