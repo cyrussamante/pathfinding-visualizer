@@ -207,18 +207,18 @@ public class GraphTable extends JFrame {
         calculateNeighbours(graph, wallNode, row, column);
     }
 
-    static void calculateNeighbours(Graph graph, Node wallNode, int row, int column) {
+    static void calculateNeighbours(Graph graph, Node node, int row, int column) {
         if (row > 0) {
-            graph.addEdge(wallNode, graph.getNode(row - 1, column)); // Up
+            graph.addEdge(node, graph.getNode(row - 1, column)); // Up
         }
         if (row < 29) {
-            graph.addEdge(wallNode, graph.getNode(row + 1, column)); // Down
+            graph.addEdge(node, graph.getNode(row + 1, column)); // Down
         }
         if (column > 0) {
-            graph.addEdge(wallNode, graph.getNode(row, column-1)); // Left
+            graph.addEdge(node, graph.getNode(row, column-1)); // Left
         }
         if (column < 59) {
-            graph.addEdge(wallNode, graph.getNode(row, column+1)); // Right
+            graph.addEdge(node, graph.getNode(row, column+1)); // Right
         }
     }
 
@@ -241,7 +241,21 @@ public class GraphTable extends JFrame {
         }
     }
 
+    private void resetNeighbours(Graph graph) {
+        for (Node node : graph.getNodes()) {
+            for (Node node2 : graph.getNodes()) {
+                if (graph.getNeighbours(node).contains(node2)) {
+                    graph.removeEdge(node, node2);
+                }
+            }
+        }
+        for (Node node : graph.getNodes()) {
+            calculateNeighbours(graph, node, node.getRow(), node.getColumn());
+        }
+    }
+
     private void clearBoard(Graph graph) {
+        resetNeighbours(graph);
         for (Node node : graph.getNodes()) {
             if (node.getNodeType() != NodeType.START && node.getNodeType() != NodeType.END) {
                 node.setNodeType(NodeType.EMPTY);
