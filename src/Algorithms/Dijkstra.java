@@ -5,8 +5,6 @@ import Graph.Node;
 import Graph.NodeType;
 import Graph.Graph;
 
-import javax.swing.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Dijkstra implements Pathfinder {

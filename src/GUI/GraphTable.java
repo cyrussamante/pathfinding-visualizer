@@ -11,13 +11,22 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 public class GraphTable extends JFrame {
 
     private JTable table;
     private int lastSelectedRow = -1;
     private int lastSelectedColumn = -1;
+
+    private boolean startSelected;
+    private boolean endSelected;
+
+
+    private int prevStartRow = -1;
+    private int prevStartCol = -1;
+
+    private int prevEndRow = -1;
+    private int prevEndCol = -1;
     public GraphTable() {
         initializeUI();
     }
@@ -58,6 +67,14 @@ public class GraphTable extends JFrame {
                 int column = table.getSelectedColumn();
                 mouseSelection(row, column);
             }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                // Add your code here to handle mouse button release
+                startSelected = false;
+                endSelected = false;
+            }
         });
 
         table.addMouseMotionListener(new MouseMotionAdapter() {
@@ -69,7 +86,14 @@ public class GraphTable extends JFrame {
                 if (row != lastSelectedRow || column != lastSelectedColumn) {
                     lastSelectedRow = row;
                     lastSelectedColumn = column;
-                    mouseSelection(row, column);
+                    if (startSelected) {
+                        moveCheckpoint(row, column, NodeType.START);
+                    } else if (endSelected){
+                        moveCheckpoint(row, column, NodeType.END);
+                    } else {
+                        mouseSelection(row, column);
+                    }
+
                 }
             }
         });
@@ -97,17 +121,48 @@ public class GraphTable extends JFrame {
             }
         });
 
+        JLabel titleLabel = new JLabel("Pathfinding Visualizer");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+
         JPanel gridPanel = new JPanel();
+        gridPanel.add(titleLabel);
         gridPanel.add(table);
+
         setLayout(new BorderLayout());
         add(gridPanel, BorderLayout.CENTER);
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(clearBoardButton);
         buttonPanel.add(visualizeButton);
         buttonPanel.add(clearPathButton);
+
         add(buttonPanel, BorderLayout.SOUTH);
 
+    }
 
+    private void moveCheckpoint(int row, int column, NodeType checkpoint) {
+        Node cellData = (Node) table.getValueAt(row, column);
+        NodeType nodeType = cellData.getNodeType();
+        if (nodeType == NodeType.EMPTY) {
+            Node oldCheckpoint;
+            if (checkpoint == NodeType.START) {
+                oldCheckpoint = (Node) table.getValueAt(prevStartRow, prevStartCol);
+                oldCheckpoint.setNodeType(NodeType.EMPTY);
+                cellData.setNodeType(NodeType.START);
+                prevStartRow = row;
+                prevStartCol = column;
+            } else {
+                oldCheckpoint = (Node) table.getValueAt(prevEndRow, prevEndCol);
+                oldCheckpoint.setNodeType(NodeType.EMPTY);
+                cellData.setNodeType(NodeType.END);
+                prevEndRow = row;
+                prevEndCol = column;
+            }
+
+
+        }
+        ((GraphTableModel) table.getModel()).fireTableCellUpdated(row, column);
     }
 
     private void mouseSelection(int row, int column) {
@@ -120,6 +175,15 @@ public class GraphTable extends JFrame {
         } else if (nodeType != NodeType.START && nodeType != NodeType.END) {
             createWall(graph, cellData);
             cellData.setNodeType(NodeType.WALL);
+        }
+        else if (nodeType == NodeType.START) {
+            prevStartRow = row;
+            prevStartCol = column;
+            startSelected = true;
+        } else {
+            prevEndRow = row;
+            prevEndCol = column;
+            endSelected = true;
         }
         ((GraphTableModel) table.getModel()).fireTableCellUpdated(row, column);
     }
