@@ -144,25 +144,30 @@ public class GraphTable extends JFrame {
     private void moveCheckpoint(int row, int column, NodeType checkpoint) {
         Node cellData = (Node) table.getValueAt(row, column);
         NodeType nodeType = cellData.getNodeType();
-        if (nodeType == NodeType.EMPTY) {
             Node oldCheckpoint;
             if (checkpoint == NodeType.START) {
                 oldCheckpoint = (Node) table.getValueAt(prevStartRow, prevStartCol);
-                oldCheckpoint.setNodeType(NodeType.EMPTY);
-                cellData.setNodeType(NodeType.START);
-                prevStartRow = row;
-                prevStartCol = column;
-            } else {
+                if (nodeType != NodeType.END) {
+                    ((GraphTableModel) table.getModel()).fireTableCellUpdated(prevStartRow, prevStartCol);
+
+                    oldCheckpoint.setNodeType(NodeType.EMPTY);
+                    cellData.setNodeType(NodeType.START);
+                    prevStartRow = row;
+                    prevStartCol = column;
+                }
+            } else if (checkpoint == NodeType.END){
                 oldCheckpoint = (Node) table.getValueAt(prevEndRow, prevEndCol);
-                oldCheckpoint.setNodeType(NodeType.EMPTY);
-                cellData.setNodeType(NodeType.END);
-                prevEndRow = row;
-                prevEndCol = column;
+                if (nodeType != NodeType.START) {
+                    ((GraphTableModel) table.getModel()).fireTableCellUpdated(prevEndRow, prevEndCol);
+                    oldCheckpoint.setNodeType(NodeType.EMPTY);
+                    cellData.setNodeType(NodeType.END);
+                    prevEndRow = row;
+                    prevEndCol = column;
+                }
+
             }
-
-
-        }
         ((GraphTableModel) table.getModel()).fireTableCellUpdated(row, column);
+
     }
 
     private void mouseSelection(int row, int column) {
