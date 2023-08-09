@@ -1,43 +1,54 @@
 package Algorithms;
 
+import GUI.GraphTableModel;
 import Graph.Node;
+import Graph.NodeType;
 import Graph.Graph;
 
+import javax.swing.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Dijkstra implements Pathfinder {
 
     @Override
-    public LinkedHashSet<Node> findPath(Graph graph, Node startNode, Node endNode) {
-        System.out.println("start1");
-
-        // Initialize path and cost arrays
+    public ArrayList<LinkedHashSet<Node>> findPath(Graph graph, Node startNode, Node endNode) {
+        LinkedHashSet<Node> visitedOrder = new LinkedHashSet<>();
         Node[] paths = new Node[graph.getNodes().size()];
         Integer[] cost = new Integer[graph.getNodes().size()];
         paths[startNode.getId()] = startNode;
         cost[startNode.getId()] = 0;
 
-        PriorityQueue<Node> queue = new PriorityQueue<>();
+        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(node -> cost[node.getId()]));
         queue.offer(startNode);
+
         while (!queue.isEmpty()) {
-            // Remove the lowest priority node
-            Node current = queue.remove();
+            Node current = queue.poll();
+            if (current == endNode) {
+                break; // Early termination if endNode is reached
+            }
+
             for (Node node : graph.getNeighbours(current)) {
-                // Current weighting for edge
-                Integer possibleWeight = cost[current.getId()] + 1;
-                if (cost[node.getId()] == null || possibleWeight <= cost[node.getId()]) {
+                int possibleWeight = cost[current.getId()] + 1;
+                if (cost[node.getId()] == null || possibleWeight < cost[node.getId()]) {
                     paths[node.getId()] = current;
                     cost[node.getId()] = possibleWeight;
-                    // Update node to new priority
                     node.setWeight(possibleWeight);
                     queue.offer(node);
                 }
+
+                if (node.getNodeType() != NodeType.START && node.getNodeType() != NodeType.END) {
+                    visitedOrder.add(node);
+                }
             }
-            System.out.println(queue.peek());
         }
-        System.out.println("done1");
-        return getShortestPath(startNode, endNode, paths);
+
+        ArrayList<LinkedHashSet<Node>> data = new ArrayList<>();
+        data.add(getShortestPath(startNode, endNode, paths));
+        data.add(visitedOrder);
+        return data;
     }
+
 
     /**
      * Iterates through the array that Dijkstra calculated and returns the one path from two specified nodes
@@ -47,7 +58,6 @@ public class Dijkstra implements Pathfinder {
      * @return a list of nodes that make up the shortest path
      */
     private static LinkedHashSet<Node> getShortestPath(Node startNode, Node endNode, Node[] paths) {
-        System.out.println("start2");
 
         Set<Node> shortestPath = new LinkedHashSet<>();
         Node currentNode = paths[endNode.getId()];
@@ -63,7 +73,6 @@ public class Dijkstra implements Pathfinder {
         }
         List<Node> path = new ArrayList<>(shortestPath);
         Collections.reverse(path);
-        System.out.println("done2");
 
         return new LinkedHashSet<>(path);
     }
