@@ -1,5 +1,6 @@
 package GUI;
 
+import Graph.Graph;
 import Graph.Node;
 
 import javax.swing.*;
@@ -20,5 +21,19 @@ public class GraphTableCellRenderer extends DefaultTableCellRenderer {
         cellComponent.setForeground(cellValue.getNodeType().getColor());
 
         return cellComponent;
+    }
+
+    static void createWall(Graph graph, Node wallNode) {
+        for (Node currentNode : graph.getNodes()) {
+            if (currentNode != wallNode) {
+                graph.removeEdge(currentNode, wallNode);
+            }
+        }
+    }
+
+    static void destroyWall(Graph graph, Node wallNode) {
+        int row = wallNode.getRow();
+        int column = wallNode.getColumn();
+//        calculateNeighbours(graph, wallNode, row, column);
     }
 }
