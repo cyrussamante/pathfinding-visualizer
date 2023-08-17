@@ -41,7 +41,6 @@ public class DepthFirst implements Pathfinder {
         ArrayList<LinkedHashSet<Node>> data = new ArrayList<>();
         data.add(visitedOrder);
         data.add(visitedOrder);
-
         return data;
     }
 }

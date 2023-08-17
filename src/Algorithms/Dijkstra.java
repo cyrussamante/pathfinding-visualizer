@@ -1,6 +1,5 @@
 package Algorithms;
 
-import GUI.GraphTableModel;
 import Graph.Node;
 import Graph.NodeType;
 import Graph.Graph;
