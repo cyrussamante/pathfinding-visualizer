@@ -12,22 +12,25 @@ public class DepthFirst implements Pathfinder {
 
     LinkedHashSet<Node> visitedOrder = new LinkedHashSet<>();
     Node endNode;
-    public void DFSRecursion(Graph graph, Node node, boolean[] marked) {
+    public boolean DFSRecursion(Graph graph, Node node, boolean[] marked) {
         LinkedHashSet<Node> neighbours = new LinkedHashSet<Node>(graph.getNeighbours(node));
         LinkedHashSet<Node> sortedNodes = neighbours.stream()
                 .sorted(Comparator.comparingInt(Node::getId))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+        if (node == endNode) {
+            return true;
+        }
 
         for (Node n : sortedNodes) {
             if (!marked[n.getId()]) {
                 marked[n.getId()] = true;
                 visitedOrder.add(n);
-                if (n == endNode) {
-                    break;
-                }
-                DFSRecursion(graph, n, marked);
+                if (DFSRecursion(graph, n, marked)) {
+                    return true;
+                };
             }
         }
+        return false;
     }
 
     @Override
