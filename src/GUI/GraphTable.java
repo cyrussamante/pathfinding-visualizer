@@ -1,5 +1,7 @@
 package GUI;
 
+import Algorithms.BreadthFirst;
+import Algorithms.DepthFirst;
 import Algorithms.Dijkstra;
 import Algorithms.Pathfinder;
 import Graph.Node;
@@ -11,6 +13,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
 public class GraphTable extends JFrame {
 
@@ -98,14 +101,40 @@ public class GraphTable extends JFrame {
             }
         });
 
-        JButton visualizeButton = new JButton("Visualize Dijkstra!");
+        JPanel buttonPanel = new JPanel();
+        String[] algorithms = {"Choose an algorithm", "Dijkstra", "Depth-first Search", "Breadth-first Search"};
+        JComboBox<String> jComboBox = new JComboBox<>(algorithms);
+
+        JButton visualizeButton = new JButton("Visualize!");
         JButton clearBoardButton = new JButton("Clear Board");
         JButton clearPathButton = new JButton("Clear Path");
 
         Graph graph = ((GraphTableModel)table.getModel()).getGraph();
+
+        jComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selection = jComboBox.getItemAt(jComboBox.getSelectedIndex());
+                if (!Objects.equals(selection, jComboBox.getItemAt(0))) {
+                    visualizeButton.setText("Visualize " + selection + "!");
+                } else {
+                    visualizeButton.setText("Visualize!");
+                }
+            }
+        });
         visualizeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                calculateDijkstra(graph);
+                String selection = jComboBox.getItemAt(jComboBox.getSelectedIndex());
+                if (Objects.equals(selection, "Dijkstra")) {
+                    visualizePathfinder(graph, new Dijkstra());
+                } else if ((Objects.equals(selection, "Depth-first Search"))){
+                    visualizePathfinder(graph, new DepthFirst());
+                } else if ((Objects.equals(selection, "Breadth-first Search"))) {
+                    visualizePathfinder(graph, new BreadthFirst());
+                } else {
+                    mustChoose();
+                }
+
             }
         });
 
@@ -132,13 +161,23 @@ public class GraphTable extends JFrame {
         setLayout(new BorderLayout());
         add(gridPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel();
+
+
         buttonPanel.add(clearBoardButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+        buttonPanel.add(jComboBox);
         buttonPanel.add(visualizeButton);
         buttonPanel.add(clearPathButton);
 
-        add(buttonPanel, BorderLayout.SOUTH);
 
+
+
+
+
+    }
+
+    private void mustChoose() {
+        JOptionPane.showMessageDialog(this, "You must choose an algorithm to visualize!");
     }
 
     private void moveCheckpoint(int row, int column, NodeType checkpoint) {
@@ -265,13 +304,12 @@ public class GraphTable extends JFrame {
         }
     }
 
-    private void calculateDijkstra(Graph graph) {
+    private void visualizePathfinder(Graph graph, Pathfinder pathfinder) {
         Node startNode = findNode(graph, NodeType.START);
         Node endNode = findNode(graph, NodeType.END);
 
         clearPath(graph);
 
-        Pathfinder pathfinder = new Dijkstra();
         LinkedHashSet<Node> shortestPath = pathfinder.findPath(graph, startNode, endNode).get(0);
         LinkedHashSet<Node> visitedOrder = pathfinder.findPath(graph, startNode, endNode).get(1);
         shortestPath.remove(startNode);
