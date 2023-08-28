@@ -53,7 +53,7 @@ public class GraphTableModel extends AbstractTableModel {
         for (int i = 0; i < 30; i++) {
             for (int j = 0; j < 60; j++) {
                 Node node = graph.getNode(i, j);
-//                GraphTable.calculateNeighbours(graph, node, i, j);
+                NeighbourHandler.calculateNeighbours(graph, node, i, j);
             }
         }
  }

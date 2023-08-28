@@ -1,10 +1,13 @@
 package GUI;
 
+import Algorithms.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
+import Graph.Graph;
 
 public class ControlElementHandler implements Handler {
     private JComboBox<String> dropdownMenu;
@@ -14,6 +17,9 @@ public class ControlElementHandler implements Handler {
     private final JButton visualizeButton = new JButton();
     private final JButton clearBoardButton = new JButton();
     private final JButton clearPathButton = new JButton();
+    private final JTable table = GraphGrid.table;
+    private final Graph graph = ((GraphTableModel) table.getModel()).getGraph();
+    private boolean visualizationInProgress;
 
     @Override
     public void display(JFrame frame) {
@@ -70,15 +76,53 @@ public class ControlElementHandler implements Handler {
         visualizeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String selection = dropdownMenu.getItemAt(dropdownMenu.getSelectedIndex());
-                if (Objects.equals(selection, "Dijkstra")) {
-//                    visualizePathfinder(graph, new Dijkstra());
-                } else if ((Objects.equals(selection, "Depth-first Search"))){
-//                    visualizePathfinder(graph, new DepthFirst());
-                } else if ((Objects.equals(selection, "Breadth-first Search"))) {
-//                    visualizePathfinder(graph, new BreadthFirst());
-                } else {
-                    JOptionPane.showMessageDialog(frame, "You must choose an algorithm to visualize!");
+                PathfindingVisualizer pathfindingVisualizer = new PathfindingVisualizer();
+                if (!visualizationInProgress) {
+                    if (Objects.equals(selection, "Dijkstra")) {
+                        visualizationInProgress = true;
+                        visualizeButton.setEnabled(false); // Disable the button during visualization
+                        clearPathButton.setEnabled(false);
+                        clearBoardButton.setEnabled(false);
+                        GraphInputListener.disable();
+                        pathfindingVisualizer.visualizePathfinder(graph, table, new Dijkstra(), () -> {
+                            visualizationInProgress = false;
+                            visualizeButton.setEnabled(true); // Enable the button after visualization
+                            clearPathButton.setEnabled(true);
+                            clearBoardButton.setEnabled(true);
+                            GraphInputListener.enable();
+
+                        });
+                    } else if ((Objects.equals(selection, "Depth-first Search"))){
+                        visualizationInProgress = true;
+                        visualizeButton.setEnabled(false); // Disable the button during visualization
+                        clearPathButton.setEnabled(false);
+                        clearBoardButton.setEnabled(false);
+                        GraphInputListener.disable();
+                        pathfindingVisualizer.visualizePathfinder(graph, table, new DepthFirst(), () -> {
+                            visualizationInProgress = false;
+                            visualizeButton.setEnabled(true); // Enable the button after visualization
+                            clearPathButton.setEnabled(true);
+                            clearBoardButton.setEnabled(true);
+                            GraphInputListener.enable();
+                        });
+                    } else if ((Objects.equals(selection, "Breadth-first Search"))) {
+                        visualizationInProgress = true;
+                        visualizeButton.setEnabled(false); // Disable the button during visualization
+                        clearPathButton.setEnabled(false);
+                        clearBoardButton.setEnabled(false);
+                        GraphInputListener.disable();
+                        pathfindingVisualizer.visualizePathfinder(graph, table, new BreadthFirst(), () -> {
+                            visualizationInProgress = false;
+                            visualizeButton.setEnabled(true); // Enable the button after visualization
+                            clearPathButton.setEnabled(true);
+                            clearBoardButton.setEnabled(true);
+                            GraphInputListener.enable();
+                        });
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "You must choose an algorithm to visualize!");
+                    }
                 }
+
 
             }
         });
@@ -90,7 +134,7 @@ public class ControlElementHandler implements Handler {
         buttonRowPanel.add(clearBoardButton);
         clearBoardButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-//                clearBoard(graph);
+                GraphTableCellRenderer.clearBoard(graph);
             }
         });
     }
@@ -101,7 +145,7 @@ public class ControlElementHandler implements Handler {
 
         clearPathButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-//                clearPath(graph);
+                GraphTableCellRenderer.clearPath(graph);
             }
         });
     }

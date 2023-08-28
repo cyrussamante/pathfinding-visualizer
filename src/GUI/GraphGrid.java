@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class GraphGrid extends JTable {
     private JFrame frame;
-    private JTable table;
+    static JTable table;
 
 
     public void display(JFrame frame) {

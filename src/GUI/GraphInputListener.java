@@ -15,18 +15,18 @@ public class GraphInputListener {
     private JTable grid;
     private int lastSelectedRow = -1;
     private int lastSelectedColumn = -1;
-
     private boolean startSelected;
     private boolean endSelected;
-
     private int prevStartRow = -1;
     private int prevStartCol = -1;
-
     private int prevEndRow = -1;
     private int prevEndCol = -1;
+    private static boolean visualizationInProgress;
 
     public void startListener(JTable grid) {
         this.grid = grid;
+        if (visualizationInProgress) return;
+
         grid.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -66,6 +66,7 @@ public class GraphInputListener {
     }
 
     private void mouseSelection(int row, int column) {
+        if (visualizationInProgress) return;
         Node cellData = (Node) grid.getValueAt(row, column);
         NodeType nodeType = cellData.getNodeType();
         Graph graph = ((GraphTableModel)grid.getModel()).getGraph();
@@ -89,6 +90,8 @@ public class GraphInputListener {
     }
 
     private void moveCheckpoint(int row, int column, NodeType checkpoint) {
+        if (visualizationInProgress) return;
+
         Node cellData = (Node) grid.getValueAt(row, column);
         NodeType nodeType = cellData.getNodeType();
         Node oldCheckpoint;
@@ -115,5 +118,13 @@ public class GraphInputListener {
         }
         ((GraphTableModel) grid.getModel()).fireTableCellUpdated(row, column);
 
+    }
+
+    public static void disable() {
+        visualizationInProgress = true;
+    }
+
+    public static void enable() {
+        visualizationInProgress = false;
     }
 }
