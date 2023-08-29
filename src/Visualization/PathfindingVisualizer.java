@@ -1,6 +1,8 @@
-package GUI;
+package Visualization;
 
 import Algorithms.Pathfinder;
+import GUI.GraphTableCellRenderer;
+import GUI.GraphTableModel;
 import Graph.Node;
 import Graph.NodeType;
 import Graph.Graph;
@@ -34,12 +36,23 @@ public class PathfindingVisualizer {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (visitedIndex!= 0 && visitedArray[visitedIndex-1].getNodeType() == NodeType.NEW) {
+                    Node previous = visitedArray[visitedIndex - 1];
+                    previous.setNodeType(NodeType.VISITED);
+                    // Notify the table model that the cell data has been updated
+                    ((GraphTableModel) table.getModel()).fireTableCellUpdated(previous.getRow(), previous.getColumn());
+
+                    // Trigger the table to repaint
+                    table.repaint();
+                }
 
                 if (visitedIndex < visitedArray.length) {
                     Node path = visitedArray[visitedIndex++];
+
                     if (path.getNodeType() == NodeType.EMPTY) {
-                        path.setNodeType(NodeType.VISITED);
+                        path.setNodeType(NodeType.NEW);
                     }
+
                     // Notify the table model that the cell data has been updated
                     ((GraphTableModel) table.getModel()).fireTableCellUpdated(path.getRow(), path.getColumn());
 
@@ -47,7 +60,6 @@ public class PathfindingVisualizer {
                     table.repaint();
                 }
                 else if (pathIndex < pathArray.length) {
-
                     Node path = pathArray[pathIndex++];
                     path.setNodeType(NodeType.PATHWAY);
                     // Notify the table model that the cell data has been updated
@@ -59,23 +71,14 @@ public class PathfindingVisualizer {
                 } else {
                     // Stop the timer when all iterations are completed
                     ((Timer) e.getSource()).stop();
+                    callback.run(); // Callback after visualization is done
+
                 }
             }
         });
 
         // Start the timer
         timer.start();
-
-        // Callback after visualization is done
-        timer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!timer.isRunning()) {
-                    callback.run();
-                }
-            }
-        });
-
 
     }
 

@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
 import Graph.Graph;
+import Visualization.PathfindingVisualizer;
 
 public class ControlElementHandler implements Handler {
     private JComboBox<String> dropdownMenu;

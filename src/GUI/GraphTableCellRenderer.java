@@ -42,7 +42,7 @@ public class GraphTableCellRenderer extends DefaultTableCellRenderer {
         NeighbourHandler.calculateNeighbours(graph, wallNode, row, column);
     }
 
-    static void clearPath(Graph graph) {
+    public static void clearPath(Graph graph) {
         for (Node node : graph.getNodes()) {
             if (node.getNodeType() == NodeType.PATHWAY || node.getNodeType() == NodeType.VISITED) {
                 node.setNodeType(NodeType.EMPTY);

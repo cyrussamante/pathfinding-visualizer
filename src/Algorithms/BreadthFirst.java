@@ -16,6 +16,7 @@ public class BreadthFirst implements Pathfinder {
         queue.offer(startNode);
         while (!queue.isEmpty()) {
             Node n = queue.remove();
+            if (n == endNode) break;
             LinkedHashSet<Node> neighbours = new LinkedHashSet<Node>(graph.getNeighbours(n));
             for (Node neighbour : neighbours) {
                 if (!marked[neighbour.getId()]) {
@@ -23,6 +24,7 @@ public class BreadthFirst implements Pathfinder {
                     visitedOrder.add(neighbour);
                     parent[neighbour.getId()] = n;
                     queue.offer(neighbour);
+
                 }
             }
         }
@@ -30,7 +32,7 @@ public class BreadthFirst implements Pathfinder {
         // Shortest Path calculation
         ArrayList<Node> finalPath = new ArrayList<>();
         Node currentNode = parent[endNode.getId()];
-        while (currentNode != startNode) {
+        while (currentNode != startNode && currentNode!= null) {
             finalPath.add(currentNode);
             currentNode = parent[currentNode.getId()];
         }

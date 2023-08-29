@@ -1,4 +1,4 @@
-import GUI.Visualizer;
+import Visualization.Visualizer;
 
 import javax.swing.*;
 public class Main {

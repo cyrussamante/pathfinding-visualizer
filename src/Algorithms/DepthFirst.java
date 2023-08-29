@@ -39,7 +39,11 @@ public class DepthFirst implements Pathfinder {
         boolean[] marked = new boolean[graph.getNodeCount()];
         DFSRecursion(graph, startNode, marked);
         ArrayList<LinkedHashSet<Node>> data = new ArrayList<>();
-        data.add(visitedOrder);
+        if (visitedOrder.contains(endNode)) {
+            data.add(visitedOrder);
+        } else {
+            data.add(new LinkedHashSet<Node>()); // No path found
+        }
         data.add(visitedOrder);
         return data;
     }
