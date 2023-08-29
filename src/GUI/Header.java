@@ -14,11 +14,17 @@ public class Header implements Handler{
         subtitleText.setText("Created by Cyruss Allen Amante");
         subtitleText.setFont(new Font("Arial", Font.PLAIN, 14));
 
+        JPanel titlePanel = new JPanel();
+        titlePanel.add(titleText);
+
+        JPanel subtitlePanel = new JPanel();
+        subtitlePanel.add(subtitleText);
+
         JPanel mainPanel = new JPanel();
-        mainPanel.add(titleText);
-        mainPanel.add(subtitleText);
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
+        mainPanel.add(titlePanel);
+        mainPanel.add(subtitlePanel);
         frame.add(mainPanel, BorderLayout.NORTH);
-
     }
 }

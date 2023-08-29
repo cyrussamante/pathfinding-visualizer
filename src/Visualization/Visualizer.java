@@ -13,8 +13,13 @@ public class Visualizer extends JFrame {
         setTitle("Pathfinding Visualizer");
 
         setSize(1400, 800);
-        setMinimumSize(new Dimension(1200,800));
-        setMaximumSize(new Dimension(1200,800));
+        setResizable(false);
+        setMinimumSize(new Dimension(1400,800));
+        setMaximumSize(new Dimension(1400,800));
+
+        ImageIcon img = new ImageIcon("src/Assets/icon-img.png");
+        setIconImage(img.getImage());
+
         Header header = new Header();
         header.display(this);
 
